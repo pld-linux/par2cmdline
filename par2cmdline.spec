@@ -8,6 +8,8 @@ Group:		Applications/Archiving
 Source0:	http://dl.sourceforge.net/parchive/%{name}-%{version}.tar.gz
 # Source0-md5:	705c97bc41b862d281dd41c219a60849
 URL:		http://sourceforge.net/projects/parchive/
+BuildRequires:	automake
+BuildRequires:	libstdc++-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -24,9 +26,9 @@ potrzeby. Mo¿e byæ u¿ywany na dowolnych rodzajach plików.
 %setup -q
 
 %build
-CFLAGS="%{rpmcflags}" \
-./configure \
-	--prefix=%{_prefix}
+cp -f /usr/share/automake/config.* .
+%configure
+
 %{__make}
 
 %install
@@ -42,6 +44,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS COPYING ChangeLog PORTING README ROADMAP
+%doc AUTHORS ChangeLog README
 %attr(755,root,root) %{_bindir}/par
-%attr(755,root,root) %{_bindir}/par2
+%attr(755,root,root) %{_bindir}/par2*
