@@ -1,7 +1,7 @@
 Summary:	PAR 2.0 compatible file verification and repair tool
 Name:		par2cmdline
 Version:	0.3
-Release:	0.1
+Release:	1
 License:	GPL v2+
 Group:		Applications/Archiving
 Source0:	http://dl.sourceforge.net/parchive/%{name}-%{version}.tar.gz
