@@ -33,7 +33,7 @@ potrzeby. Mo¿e byæ u¿ywany na dowolnych rodzajach plików.
 cp -f /usr/share/automake/config.* .
 %configure
 
-%{__make}
+%{__make} all check
 
 %install
 rm -rf $RPM_BUILD_ROOT
