@@ -2,11 +2,13 @@ Summary:	PAR 2.0 compatible file verification and repair tool
 Summary(pl):	Narzêdzie do weryfikacji i naprawiania plików zgodne z PAR 2.0
 Name:		par2cmdline
 Version:	0.4
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Applications/Archiving
 Source0:	http://dl.sourceforge.net/parchive/%{name}-%{version}.tar.gz
 # Source0-md5:	1551b63e57e3c232254dc62073b723a9
+Patch0:		%{name}-fix-crash-in-quiet-mode.patch
+Patch1:		%{name}-gcc41.patch
 URL:		http://sourceforge.net/projects/parchive/
 BuildRequires:	automake
 BuildRequires:	libstdc++-devel
@@ -24,6 +26,8 @@ potrzeby. Mo¿e byæ u¿ywany na dowolnych rodzajach plików.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
 cp -f /usr/share/automake/config.* .
