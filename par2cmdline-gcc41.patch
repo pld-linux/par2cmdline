@@ -1,137 +1,61 @@
 --- par2cmdline-0.4/par1fileformat.h.orig	2003-08-01 23:42:21.000000000 +0000
 +++ par2cmdline-0.4/par1fileformat.h	2005-11-04 10:37:10.725606960 +0000
-@@ -31,32 +31,32 @@
+@@ -31,7 +31,7 @@
  #pragma warning(disable:4200)
  #endif
  
 -struct PAR1MAGIC {u8 magic[8];}PACKED;
-+struct PAR1MAGIC	{ u8 magic[8] PACKED; };
++struct PAR1MAGIC {u8 magic[8];};
  
  struct PAR1FILEHEADER
  {
--  PAR1MAGIC   magic;
--  leu32       fileversion;
--  leu32       programversion;
--  MD5Hash     controlhash;
--  MD5Hash     sethash;
--  leu64       volumenumber;
--  leu64       numberoffiles;
--  leu64       filelistoffset;
--  leu64       filelistsize;
--  leu64       dataoffset;
--  leu64       datasize;
+@@ -46,7 +46,7 @@
+   leu64       filelistsize;
+   leu64       dataoffset;
+   leu64       datasize;
 -}PACKED;
-+  PAR1MAGIC   magic		PACKED;
-+  leu32       fileversion	PACKED;
-+  leu32       programversion	PACKED;
-+  MD5Hash     controlhash	PACKED;
-+  MD5Hash     sethash		PACKED;
-+  leu64       volumenumber	PACKED;
-+  leu64       numberoffiles	PACKED;
-+  leu64       filelistoffset	PACKED;
-+  leu64       filelistsize	PACKED;
-+  leu64       dataoffset	PACKED;
-+  leu64       datasize		PACKED;
 +};
  
  struct PAR1FILEENTRY
  {
--  leu64       entrysize;
--  leu64       status;
--  leu64       filesize;
--  MD5Hash     hashfull;
--  MD5Hash     hash16k;
--  leu16       name[];
+@@ -56,7 +56,7 @@
+   MD5Hash     hashfull;
+   MD5Hash     hash16k;
+   leu16       name[];
 -}PACKED;
-+  leu64       entrysize	PACKED;
-+  leu64       status	PACKED;
-+  leu64       filesize	PACKED;
-+  MD5Hash     hashfull	PACKED;
-+  MD5Hash     hash16k	PACKED;
-+  leu16       name[]	PACKED;
 +};
  
  enum FILEENTRYSTATUS
  {
 --- par2cmdline-0.4/par2fileformat.h.orig	2003-08-01 23:43:40.000000000 +0000
 +++ par2cmdline-0.4/par2fileformat.h	2005-11-04 10:36:03.149880032 +0000
-@@ -55,19 +55,19 @@
- // The types leu32 and leu64 are defined in letype.h
- 
- // Two simple types used in the packet header.
--struct MAGIC      {u8 magic[8];} PACKED;
--struct PACKETTYPE {u8 type[16];} PACKED;
-+struct MAGIC		{ u8 magic[8] PACKED; };
-+struct PACKETTYPE	{ u8 type[16] PACKED; };
- 
- // Every packet starts with a packet header.
- struct PACKET_HEADER
- {
-   // Header
--  MAGIC            magic;  // = {'P', 'A', 'R', '2', '\0', 'P', 'K', 'T'}
--  leu64            length; // Length of entire packet including header
--  MD5Hash          hash;   // Hash of entire packet excepting the first 3 fields
--  MD5Hash          setid;  // Normally computed as the Hash of body of "Main Packet"
--  PACKETTYPE       type;   // Used to specify the meaning of the rest of the packet
+@@ -67,7 +67,7 @@
+   MD5Hash          hash;   // Hash of entire packet excepting the first 3 fields
+   MD5Hash          setid;  // Normally computed as the Hash of body of "Main Packet"
+   PACKETTYPE       type;   // Used to specify the meaning of the rest of the packet
 -} PACKED;
-+  MAGIC		magic	PACKED; // = {'P', 'A', 'R', '2', '\0', 'P', 'K', 'T'}
-+  leu64		length	PACKED; // Length of entire packet including header
-+  MD5Hash	hash	PACKED; // Hash of entire packet excepting the first 3 fields
-+  MD5Hash	setid	PACKED; // Normally computed as the Hash of body of "Main Packet"
-+  PACKETTYPE	type	PACKED; // Used to specify the meaning of the rest of the packet
 +};
  
  // The file verification packet is used to determine whether or not any
  // parts of a damaged file are useable.
-@@ -76,16 +76,16 @@
- // the array can be determined from the packet_length.
- struct FILEVERIFICATIONENTRY
+@@ -78,14 +78,14 @@
  {
--  MD5Hash        hash;
--  leu32          crc;
+   MD5Hash        hash;
+   leu32          crc;
 -} PACKED;
-+  MD5Hash	hash	PACKED;
-+  leu32		crc	PACKED;
 +};
  struct FILEVERIFICATIONPACKET
  {
--  PACKET_HEADER         header;
-+  PACKET_HEADER		header		PACKED;
+   PACKET_HEADER         header;
    // Body
--  MD5Hash               fileid;     // MD5hash of file_hash_16k, file_length, file_name
--  FILEVERIFICATIONENTRY entries[];
+   MD5Hash               fileid;     // MD5hash of file_hash_16k, file_length, file_name
+   FILEVERIFICATIONENTRY entries[];
 -} PACKED;
-+  MD5Hash		fileid		PACKED; // MD5hash of file_hash_16k, file_length, file_name
-+  FILEVERIFICATIONENTRY	entries[]	PACKED;
 +};
  
  // The file description packet is used to record the name of the file,
  // its size, and the Hash of both the whole file and the first 16k of
-@@ -96,21 +96,21 @@
- // end to make it up to a multiple of 4.
- struct FILEDESCRIPTIONPACKET
- {
--  PACKET_HEADER    header;
-+  PACKET_HEADER		header		PACKED;
-   // Body
--  MD5Hash          fileid;    // MD5hash of [hash16k, length, name]
--  MD5Hash          hashfull;  // MD5 Hash of the whole file
--  MD5Hash          hash16k;   // MD5 Hash of the first 16k of the file
--  leu64            length;    // Length of the file
--  u8               name[];    // Name of the file, padded with 1 to 3 zero bytes to reach 
--                              // a multiple of 4 bytes.
--                              // Actual length can be determined from overall packet
--                              // length and then working backwards to find the first non
--                              // zero character.
-+  MD5Hash		fileid		PACKED; // MD5hash of [hash16k, length, name]
-+  MD5Hash		hashfull	PACKED; // MD5 Hash of the whole file
-+  MD5Hash		hash16k		PACKED; // MD5 Hash of the first 16k of the file
-+  leu64			length		PACKED; // Length of the file
-+  u8			name[]		PACKED; // Name of the file, padded with 1 to 3 zero bytes to reach 
-+						// a multiple of 4 bytes.
-+						// Actual length can be determined from overall packet
-+						// length and then working backwards to find the first non
-+						// zero character.
+@@ -110,7 +110,7 @@
  
    //u8* name(void) {return (u8*)&this[1];}
    //const u8* name(void) const {return (const u8*)&this[1];}
@@ -140,19 +64,8 @@
  
  // The main packet is used to tie together the other packets in a recovery file.
  // It specifies the block size used to virtually slice the source files, a count
-@@ -124,36 +124,36 @@
- // be repaired if they are found to be damaged.
- struct MAINPACKET
- {
--  PACKET_HEADER    header;
-+  PACKET_HEADER		header			PACKED;
-   // Body
--  leu64            blocksize;
--  leu32            recoverablefilecount;
--  MD5Hash          fileid[0];
-+  leu64			blocksize		PACKED;
-+  leu32			recoverablefilecount	PACKED;
-+  MD5Hash		fileid[0]		PACKED;
+@@ -131,7 +131,7 @@
+   MD5Hash          fileid[0];
    //MD5Hash* fileid(void) {return (MD5Hash*)&this[1];}
    //const MD5Hash* fileid(void) const {return (const MD5Hash*)&this[1];}
 -} PACKED;
@@ -160,27 +73,17 @@
  
  // The creator packet is used to identify which program created a particular
  // recovery file. It is not required for verification or recovery of damaged
- // files.
- struct CREATORPACKET
- {
--  PACKET_HEADER    header;
-+  PACKET_HEADER		header		PACKED;
+@@ -142,7 +142,7 @@
    // Body
--  u8               client[];
-+  u8			client[]	PACKED;
+   u8               client[];
    //u8* client(void) {return (u8*)&this[1];}
 -} PACKED;
 +};
  
  // The recovery block packet contains a single block of recovery data along
  // with the exponent value used during the computation of that block.
- struct RECOVERYBLOCKPACKET
- {
--  PACKET_HEADER    header;
-+  PACKET_HEADER		header		PACKED;
-   // Body
--  leu32            exponent;
-+  leu32			exponent	PACKED;
+@@ -153,7 +153,7 @@
+   leu32            exponent;
  //  unsigned long    data[];
  //  unsigned long* data(void) {return (unsigned long*)&this[1];}
 -} PACKED;
