@@ -29,7 +29,12 @@
  {
 --- par2cmdline-0.4/par2fileformat.h.orig	2003-08-01 23:43:40.000000000 +0000
 +++ par2cmdline-0.4/par2fileformat.h	2005-11-04 10:36:03.149880032 +0000
-@@ -67,7 +67,7 @@
+@@ -63,11 +63,11 @@
+ {
+   // Header
+   MAGIC            magic;  // = {'P', 'A', 'R', '2', '\0', 'P', 'K', 'T'}
+-  leu64            length; // Length of entire packet including header
++  leu64            length PACKED; // Length of entire packet including header
    MD5Hash          hash;   // Hash of entire packet excepting the first 3 fields
    MD5Hash          setid;  // Normally computed as the Hash of body of "Main Packet"
    PACKETTYPE       type;   // Used to specify the meaning of the rest of the packet
@@ -64,7 +69,13 @@
  
  // The main packet is used to tie together the other packets in a recovery file.
  // It specifies the block size used to virtually slice the source files, a count
-@@ -131,7 +131,7 @@
+@@ -126,12 +126,12 @@
+ {
+   PACKET_HEADER    header;
+   // Body
+-  leu64            blocksize;
++  leu64            blocksize PACKED;
+   leu32            recoverablefilecount;
    MD5Hash          fileid[0];
    //MD5Hash* fileid(void) {return (MD5Hash*)&this[1];}
    //const MD5Hash* fileid(void) const {return (const MD5Hash*)&this[1];}
