@@ -1,5 +1,6 @@
---- par2cmdline-0.4/par1fileformat.h.orig	2003-08-01 23:42:21.000000000 +0000
-+++ par2cmdline-0.4/par1fileformat.h	2005-11-04 10:37:10.725606960 +0000
+diff -urp par2cmdline-0.4.orig/par1fileformat.h par2cmdline-0.4/par1fileformat.h
+--- par2cmdline-0.4.orig/par1fileformat.h	2003-08-01 23:42:21.000000000 +0000
++++ par2cmdline-0.4/par1fileformat.h	2006-01-14 14:31:00.000000000 +0000
 @@ -31,7 +31,7 @@
  #pragma warning(disable:4200)
  #endif
@@ -9,7 +10,7 @@
  
  struct PAR1FILEHEADER
  {
-@@ -46,7 +46,7 @@
+@@ -46,7 +46,7 @@ struct PAR1FILEHEADER
    leu64       filelistsize;
    leu64       dataoffset;
    leu64       datasize;
@@ -18,7 +19,7 @@
  
  struct PAR1FILEENTRY
  {
-@@ -56,7 +56,7 @@
+@@ -56,7 +56,7 @@ struct PAR1FILEENTRY
    MD5Hash     hashfull;
    MD5Hash     hash16k;
    leu16       name[];
@@ -27,9 +28,10 @@
  
  enum FILEENTRYSTATUS
  {
---- par2cmdline-0.4/par2fileformat.h.orig	2003-08-01 23:43:40.000000000 +0000
-+++ par2cmdline-0.4/par2fileformat.h	2005-11-04 10:36:03.149880032 +0000
-@@ -63,11 +63,11 @@
+diff -urp par2cmdline-0.4.orig/par2fileformat.h par2cmdline-0.4/par2fileformat.h
+--- par2cmdline-0.4.orig/par2fileformat.h	2003-08-01 23:43:40.000000000 +0000
++++ par2cmdline-0.4/par2fileformat.h	2006-01-14 14:37:03.000000000 +0000
+@@ -63,11 +63,31 @@ struct PACKET_HEADER
  {
    // Header
    MAGIC            magic;  // = {'P', 'A', 'R', '2', '\0', 'P', 'K', 'T'}
@@ -39,11 +41,31 @@
    MD5Hash          setid;  // Normally computed as the Hash of body of "Main Packet"
    PACKETTYPE       type;   // Used to specify the meaning of the rest of the packet
 -} PACKED;
++  inline PACKET_HEADER()
++  {
++  }
++  inline PACKET_HEADER(const PACKET_HEADER& rhs)
++  {
++    *this = rhs;
++  }
++  inline PACKET_HEADER& operator = (const PACKET_HEADER& rhs)
++  {
++    magic = rhs.magic;
++    // Having pointers/references point to things that are not correctly
++    // aligned for their type does NOT work. It only "worked" by accident
++    // in older versions of gcc, and will crash on many architectures.
++    // Recent compiler rejects such code (err: cannot bind packed field 'foo' to 'bar')
++    memcpy(&length, &rhs.length, sizeof(leu64));
++    hash = rhs.hash;
++    setid = rhs.setid;
++    type = rhs.type;
++    return *this;
++  }
 +};
  
  // The file verification packet is used to determine whether or not any
  // parts of a damaged file are useable.
-@@ -78,14 +78,14 @@
+@@ -78,14 +98,14 @@ struct FILEVERIFICATIONENTRY
  {
    MD5Hash        hash;
    leu32          crc;
@@ -60,7 +82,7 @@
  
  // The file description packet is used to record the name of the file,
  // its size, and the Hash of both the whole file and the first 16k of
-@@ -110,7 +110,7 @@
+@@ -110,7 +130,7 @@ struct FILEDESCRIPTIONPACKET
  
    //u8* name(void) {return (u8*)&this[1];}
    //const u8* name(void) const {return (const u8*)&this[1];}
@@ -69,7 +91,7 @@
  
  // The main packet is used to tie together the other packets in a recovery file.
  // It specifies the block size used to virtually slice the source files, a count
-@@ -126,12 +126,12 @@
+@@ -126,12 +146,12 @@ struct MAINPACKET
  {
    PACKET_HEADER    header;
    // Body
@@ -84,7 +106,7 @@
  
  // The creator packet is used to identify which program created a particular
  // recovery file. It is not required for verification or recovery of damaged
-@@ -142,7 +142,7 @@
+@@ -142,7 +162,7 @@ struct CREATORPACKET
    // Body
    u8               client[];
    //u8* client(void) {return (u8*)&this[1];}
@@ -93,7 +115,7 @@
  
  // The recovery block packet contains a single block of recovery data along
  // with the exponent value used during the computation of that block.
-@@ -153,7 +153,7 @@
+@@ -153,7 +173,7 @@ struct RECOVERYBLOCKPACKET
    leu32            exponent;
  //  unsigned long    data[];
  //  unsigned long* data(void) {return (unsigned long*)&this[1];}
@@ -102,9 +124,10 @@
  
  #ifdef _MSC_VER
  #pragma warning(default:4200)
---- par2cmdline-0.4/reedsolomon.cpp.orig	2003-05-26 18:01:31.000000000 +0000
-+++ par2cmdline-0.4/reedsolomon.cpp	2005-11-04 10:40:23.855246792 +0000
-@@ -51,6 +51,7 @@
+diff -urp par2cmdline-0.4.orig/reedsolomon.cpp par2cmdline-0.4/reedsolomon.cpp
+--- par2cmdline-0.4.orig/reedsolomon.cpp	2003-05-26 18:01:31.000000000 +0000
++++ par2cmdline-0.4/reedsolomon.cpp	2006-01-14 14:31:00.000000000 +0000
+@@ -51,6 +51,7 @@ u32 gcd(u32 a, u32 b)
    }
  }
  
@@ -112,7 +135,7 @@
  bool ReedSolomon<Galois8>::SetInput(const vector<bool> &present)
  {
    inputcount = (u32)present.size();
-@@ -80,6 +81,7 @@
+@@ -80,6 +81,7 @@ bool ReedSolomon<Galois8>::SetInput(cons
    return true;
  }
  
@@ -120,7 +143,7 @@
  bool ReedSolomon<Galois8>::SetInput(u32 count)
  {
    inputcount = count;
-@@ -101,6 +103,7 @@
+@@ -101,6 +103,7 @@ bool ReedSolomon<Galois8>::SetInput(u32 
    return true;
  }
  
@@ -128,7 +151,7 @@
  bool ReedSolomon<Galois8>::Process(size_t size, u32 inputindex, const void *inputbuffer, u32 outputindex, void *outputbuffer)
  {
    // Look up the appropriate element in the RS matrix
-@@ -189,6 +192,7 @@
+@@ -189,6 +192,7 @@ bool ReedSolomon<Galois8>::Process(size_
  
  // Set which of the source files are present and which are missing
  // and compute the base values to use for the vandermonde matrix.
@@ -136,7 +159,7 @@
  bool ReedSolomon<Galois16>::SetInput(const vector<bool> &present)
  {
    inputcount = (u32)present.size();
-@@ -233,6 +237,7 @@
+@@ -233,6 +237,7 @@ bool ReedSolomon<Galois16>::SetInput(con
  
  // Record that the specified number of source files are all present
  // and compute the base values to use for the vandermonde matrix.
@@ -144,7 +167,7 @@
  bool ReedSolomon<Galois16>::SetInput(u32 count)
  {
    inputcount = count;
-@@ -267,6 +272,7 @@
+@@ -267,6 +272,7 @@ bool ReedSolomon<Galois16>::SetInput(u32
    return true;
  }
  
