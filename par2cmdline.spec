@@ -1,5 +1,5 @@
 Summary:	PAR 2.0 compatible file verification and repair tool
-Summary(pl):	Narzêdzie do weryfikacji i naprawiania plików zgodne z PAR 2.0
+Summary(pl.UTF-8):   NarzÄ™dzie do weryfikacji i naprawiania plikÃ³w zgodne z PAR 2.0
 Name:		par2cmdline
 Version:	0.4
 Release:	3
@@ -19,10 +19,10 @@ par2cmdline is a program for creating and using PAR2 files to detect
 damage in data files and repair them if necessary. It can be used with
 any kind of file.
 
-%description -l pl
-par2cmdline to program do tworzenia i u¿ywania plików PAR2 do
-wykrywania uszkodzeñ w plikach z danymi i naprawiania ich w razie
-potrzeby. Mo¿e byæ u¿ywany na dowolnych rodzajach plików.
+%description -l pl.UTF-8
+par2cmdline to program do tworzenia i uÅ¼ywania plikÃ³w PAR2 do
+wykrywania uszkodzeÅ„ w plikach z danymi i naprawiania ich w razie
+potrzeby. MoÅ¼e byÄ‡ uÅ¼ywany na dowolnych rodzajach plikÃ³w.
 
 %prep
 %setup -q
