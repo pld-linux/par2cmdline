@@ -1,5 +1,5 @@
 Summary:	PAR 2.0 compatible file verification and repair tool
-Summary(pl.UTF-8):   Narzędzie do weryfikacji i naprawiania plików zgodne z PAR 2.0
+Summary(pl.UTF-8):	Narzędzie do weryfikacji i naprawiania plików zgodne z PAR 2.0
 Name:		par2cmdline
 Version:	0.4
 Release:	3
